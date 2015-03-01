@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class Pompiers {
 	
+	private int idSession;
 	private int id;
 	private String mdp;
 	private boolean directeur;
@@ -24,6 +25,12 @@ public class Pompiers {
 	private List<String> attente;
 	private List<String> refuse;
 	private List<String> gestion;
+	
+	/*
+	* Id of the session obtained through login
+	*/
+	public void setIdSession(int idSession){this.idSession=idSession;}
+	public int getIdSession(){return idSession;}
 	
 	/*
 	 * Id of the fireman
