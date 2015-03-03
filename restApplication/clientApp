@@ -24,28 +24,43 @@ import objectsTemplates.*;
 * Class to call server and supply methods for controllers of IHM
 */
 
-public class clientApp {
+public class ClientApp {
 	
-		Pompiers pompier;
-		List<Stage> listSession;
-		List<Pompiers> newListCandidats;
+		private Pompiers pompier;
+		private List<Stage> listSession;
+		private List<Pompiers> newListCandidats;
+		private List<?> abstractList;
+
+		ClientConfig config;
+		Client client;
+		WebResource service;
 		
+		public ClientApp(List<?> abstractList) {
+			super();
+			this.abstractList =  abstractList;
+		}
 		
-	
 		private static URI getBaseURI() {
 			URI uri = UriBuilder.fromUri("http://localhost:8080").build();
 			return uri;
 		}
+		
+		public void connect(){
+			// Get access to the service object
+			config = new DefaultClientConfig();
+			client = Client.create(config);
+			service = client.resource(getBaseURI());
+		}
+		
+		/*public List<?> getInfo(List<?> type, String path){
+			
+			abstractList = service.path(path).accept(MediaType.APPLICATION_JSON).get(new GenericType<type>(){}); 
+		}*/
 	
 		public List<String> getListSessionDirecteur(){
-			
-			// Get access to the service object
-			ClientConfig config = new DefaultClientConfig();
-			Client client = Client.create(config);
-			WebResource service = client.resource(getBaseURI());
-
+			connect();
 			listSession = service.path("directeur").accept(MediaType.APPLICATION_JSON).get(new GenericType<List<Stage>>(){}); 
-
+			
 			List<String> listSess = new ArrayList();
 	    	
 			Iterator<Stage> ite = listSession.iterator();
@@ -59,14 +74,8 @@ public class clientApp {
 	 
 	 
 		public List<String> getListCandidatDirecteur(Stage session){
-			
-			// Get access to the service object
-			ClientConfig config = new DefaultClientConfig();
-			Client client = Client.create(config);
-			WebResource service = client.resource(getBaseURI());
-
+			connect();
 		 	List<String> listPompiers = new ArrayList();
-		 	
 		 	List<String> listIdCandidat = session.getCandidats();
 		 	
 	    	Iterator<String> ite = listIdCandidat.iterator();
@@ -93,12 +102,7 @@ public class clientApp {
 		}
 		
 		public void pushInfoServer(){
-			
-			// Get access to the service object
-			ClientConfig config = new DefaultClientConfig();
-			Client client = Client.create(config);
-			WebResource service = client.resource(getBaseURI());
-
+			connect();
 			
 			// Create a new list of candidates
 			newListCandidats = postListGestionDirecteur();
