@@ -1,0 +1,119 @@
+package restApplication;
+
+
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.GenericType;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriBuilder;
+
+import java.io.PrintWriter;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import objectsTemplates.*;
+
+/*
+* Created with Eclipse.
+* Author : Caroline Chabert
+* Class to call server and supply methods for controllers of IHM
+*/
+
+public class clientApp {
+	
+		Pompiers pompier;
+		List<Stage> listSession;
+		List<Pompiers> newListCandidats;
+		
+		
+	
+		private static URI getBaseURI() {
+			URI uri = UriBuilder.fromUri("http://localhost:8080").build();
+			return uri;
+		}
+	
+		public List<String> getListSessionDirecteur(){
+			
+			// Get access to the service object
+			ClientConfig config = new DefaultClientConfig();
+			Client client = Client.create(config);
+			WebResource service = client.resource(getBaseURI());
+
+			listSession = service.path("directeur").accept(MediaType.APPLICATION_JSON).get(new GenericType<List<Stage>>(){}); 
+
+			List<String> listSess = new ArrayList();
+	    	
+			Iterator<Stage> ite = listSession.iterator();
+	    	while(ite.hasNext()){
+	    		Stage newLigne = ite.next();
+	    		String ligneSess = newLigne.getUV() + " " + newLigne.getDate() + " " + newLigne.getLieu();
+	    		listSess.add(ligneSess);
+	    	}
+	    	return listSess;
+	    }
+	 
+	 
+		public List<String> getListCandidatDirecteur(Stage session){
+			
+			// Get access to the service object
+			ClientConfig config = new DefaultClientConfig();
+			Client client = Client.create(config);
+			WebResource service = client.resource(getBaseURI());
+
+		 	List<String> listPompiers = new ArrayList();
+		 	
+		 	List<String> listIdCandidat = session.getCandidats();
+		 	
+	    	Iterator<String> ite = listIdCandidat.iterator();
+	    	while(ite.hasNext()){
+	    		String newLigne = ite.next();
+	    		String path = "pompier/" + newLigne;
+	    		
+	    		Pompiers pomp = service.path(path).accept(MediaType.APPLICATION_JSON).get(new GenericType<Pompiers>(){}); 
+
+	    		String namePomp = pomp.getNom() + " " + pomp.getPrenom() ;
+	    		listPompiers.add(namePomp);
+	    	}
+	    	return listPompiers;
+	    }
+	 
+		public static List<Pompiers> postListGestionDirecteur(){
+			List<Pompiers> newListPomp = new ArrayList();
+			PrintWriter Sortie = null;
+		
+			Sortie.println();
+		 
+			return newListPomp;
+		 
+		}
+		
+		public void pushInfoServer(){
+			
+			// Get access to the service object
+			ClientConfig config = new DefaultClientConfig();
+			Client client = Client.create(config);
+			WebResource service = client.resource(getBaseURI());
+
+			
+			// Create a new list of candidates
+			newListCandidats = postListGestionDirecteur();
+			
+			// Add a new product using the POST HTTP method. managed by the Jersey framework
+			service.path("directeur/idPompier").type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
+			.put(new GenericType<Pompiers>(){}, newListCandidats);
+			
+		}
+	 
+
+
+		public static void main(String[] args) {
+		
+		}
+}
+
+
