@@ -99,5 +99,11 @@ public class Pompiers {
 	 */
 	public void setGestion(List<String> gestion) { this.gestion = gestion; }
 	public List<String> getGestion(){ return gestion; }
+	
+	
+	@Override
+	public String toString() {
+		return "Pompiers [nom: " + nom + ", prenom: " + prenom + "]";
+	}
 
 }
