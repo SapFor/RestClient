@@ -1,17 +1,16 @@
 package objectsTemplates;
-
 import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /*
- * Created with Eclipse.
- * Author : Caroline Chabert
- * Class to get and set firemans data hosted by the server (cloning of data)
- * 
- */
+* Created with Eclipse.
+* Author : Caroline Chabert
+* Class to get and set firemans data hosted by the server (cloning of data)
+*
+*/
 
 @XmlRootElement
-public class Pompiers {
+public class PompierConcret {
 	
 	private int idSession;
 	private int id;
@@ -27,10 +26,10 @@ public class Pompiers {
 	private List<String> gestion;
 	
 	/*
-	* Id of the session obtained through login
-	*/
-	public void setIdSession(int idSession){this.idSession=idSession;}
-	public int getIdSession(){return idSession;}
+	 * Id of the session obtained through login
+	 */
+	public void setIdSession(int idSession){ this.idSession = idSession; }
+	public int getIdSession(){ return idSession; }
 	
 	/*
 	 * Id of the fireman
@@ -47,8 +46,8 @@ public class Pompiers {
 	/*
 	 * Is this fireman a director ?
 	 */
-	public void setDirecteur(String directeur) { 
-		this.directeur = (directeur.equals("oui")); 
+	public void setDirecteur(String directeur) {
+		this.directeur = (directeur.equals("oui"));
 	}
 	public boolean getDirecteur(){ return directeur; }
 	
@@ -56,7 +55,7 @@ public class Pompiers {
 	 * Last name of the fireman
 	 */
 	public void setNom(String nom) { this.nom = nom; }
-	public String getNom(){return nom;}
+	public String getNom(){ return nom; }
 	
 	/*
 	 * First name of the fireman
@@ -80,7 +79,7 @@ public class Pompiers {
 	 * Accepted future UV session
 	 */
 	public void setAccepte(List<String> accepte) { this.accepte = accepte; }
-	public List<String> getAccepte(){return accepte;}
+	public List<String> getAccepte(){ return accepte; }
 	
 	/*
 	 * Pending future UV session
@@ -100,10 +99,9 @@ public class Pompiers {
 	public void setGestion(List<String> gestion) { this.gestion = gestion; }
 	public List<String> getGestion(){ return gestion; }
 	
-	
 	@Override
 	public String toString() {
 		return "Pompiers [nom: " + nom + ", prenom: " + prenom + "]";
 	}
-
+	
 }

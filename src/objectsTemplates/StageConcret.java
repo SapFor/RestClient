@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 
 @XmlRootElement
-public class Stage {
+public class StageConcret {
 
 	private int directeur;
 	private String uv;

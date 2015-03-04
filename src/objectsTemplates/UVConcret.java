@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 
 @XmlRootElement
-public class UVs {
+public class UVConcret {
 	
 	private String nom;
 	private String descr;
