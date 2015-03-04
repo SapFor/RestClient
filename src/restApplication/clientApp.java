@@ -33,19 +33,21 @@ public class clientApp {
 		private static WebResource service;
 		//private List<?> abstractList;
 		
+		// Get server URI
 		private static URI getBaseURI() {
 			URI uri = UriBuilder.fromUri("http://localhost:8080/SAPFORServer/webresources/serveur/").build();
 			return uri;
 		}
 		
+		// First connection with access to the service object and initialize the fireman session
 		public static void firstconnect(){
-			// Get access to the service object
 			config = new DefaultClientConfig();
 			client = Client.create(config);
 			service = client.resource(getBaseURI());
 			moi = service.path("1/12345").accept(MediaType.APPLICATION_JSON).get(new GenericType<PompierConcret>(){}); 
 		}
 		
+		// Get idSession by login and password
 		public static String login(int idPompier,String mdp){
 			String defPath = idPompier + "/" + mdp;
 			moi = service.path(defPath).accept(MediaType.APPLICATION_JSON).get(new GenericType<PompierConcret>(){});
@@ -55,8 +57,10 @@ public class clientApp {
 			else { return "ok";}
 		}
 		
+		// Get IdSession
 		public static int getIdSession(){ return idSession;}
-			
+		
+		// Deconnect the session
 		public static String deconnexion(int idSession){
 			String reponse;
 			String nSession = "" + idSession;
@@ -67,17 +71,18 @@ public class clientApp {
 			else { return "erreur de deconnexion!"; }
 		}
 		
-		
+		// Close the candidatures of a stage : associated to the "Candidater" button in the formation tab
 		public static String cloturerCandidature(String nomStage,int jour, int mois, int annee){
 			String reponse;
 			String date = jour + "/" + mois + "/" + annee;
 			reponse = service.path("directeur/" + nomStage + "/" + date).accept(MediaType.APPLICATION_JSON).get(new GenericType<String>(){});
 			if(reponse == "OK"){
-				return "date changée";
+				return "date changÃ©e";
 			}
-			else { return "Problème lors du changement de date";}
+			else { return "ProblÃ¨me lors du changement de date";}
 		}
 	
+		// Get list of the director stages : to put into the director tab
 		public static List<String> getListSessionDirecteur(){
 			//WebResource service = connect();
 			List<StageConcret> listSession = service.path("directeur/" + moi.getIdSession()).accept(MediaType.APPLICATION_JSON).get(new GenericType<List<StageConcret>>(){}); 
@@ -104,6 +109,7 @@ public class clientApp {
 	    }
 	 
 	 /*
+	  	// Get list of director candidates for a specific session : to put into the director tab
 		public List<String> getListCandidatDirecteur(StageConcret session){
 			//WebResource service = connect();
 		 	List<String> listPompiers = new ArrayList();
@@ -122,6 +128,7 @@ public class clientApp {
 	    	return listPompiers;
 	    }
 	 
+	 	// Push a updated list of candidates for a specific session to the server : "Enregistrer" button in the director tab
 		public static StageConcret postListGestionDirecteur(StageConcret session){
 			StageConcret newSession = new StageConcret();
 			
