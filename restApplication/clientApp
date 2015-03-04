@@ -26,40 +26,27 @@ import objectsTemplates.*;
 
 public class ClientApp {
 	
-		private Pompiers pompier;
-		private List<Stage> listSession;
-		private List<Pompiers> newListCandidats;
-		private List<?> abstractList;
-
-		ClientConfig config;
-		Client client;
-		WebResource service;
-		
-		public ClientApp(List<?> abstractList) {
-			super();
-			this.abstractList =  abstractList;
-		}
+		static Pompiers moi;
+	
+		//private List<?> abstractList;
 		
 		private static URI getBaseURI() {
-			URI uri = UriBuilder.fromUri("http://localhost:8080").build();
+			URI uri = UriBuilder.fromUri("http://localhost:8080/SAPFORServer/webresources/serveur/").build();
 			return uri;
 		}
 		
-		public void connect(){
+		public static WebResource connect(){
 			// Get access to the service object
-			config = new DefaultClientConfig();
-			client = Client.create(config);
-			service = client.resource(getBaseURI());
+			ClientConfig config = new DefaultClientConfig();
+			Client client = Client.create(config);
+			WebResource service = client.resource(getBaseURI());
+			moi = service.path("1/12345").accept(MediaType.APPLICATION_JSON).get(new GenericType<Pompiers>(){}); 
+			return service;
 		}
-		
-		/*public List<?> getInfo(List<?> type, String path){
-			
-			abstractList = service.path(path).accept(MediaType.APPLICATION_JSON).get(new GenericType<type>(){}); 
-		}*/
 	
-		public List<String> getListSessionDirecteur(){
-			connect();
-			listSession = service.path("directeur").accept(MediaType.APPLICATION_JSON).get(new GenericType<List<Stage>>(){}); 
+		public static List<String> getListSessionDirecteur(){
+			WebResource service = connect();
+			List<Stage> listSession = service.path("directeur/" + moi.getIdSession()).accept(MediaType.APPLICATION_JSON).get(new GenericType<List<Stage>>(){}); 
 			
 			List<String> listSess = new ArrayList();
 	    	
@@ -74,7 +61,7 @@ public class ClientApp {
 	 
 	 
 		public List<String> getListCandidatDirecteur(Stage session){
-			connect();
+			WebResource service = connect();
 		 	List<String> listPompiers = new ArrayList();
 		 	List<String> listIdCandidat = session.getCandidats();
 		 	
@@ -91,32 +78,28 @@ public class ClientApp {
 	    	return listPompiers;
 	    }
 	 
-		public static List<Pompiers> postListGestionDirecteur(){
-			List<Pompiers> newListPomp = new ArrayList();
-			PrintWriter Sortie = null;
-		
-			Sortie.println();
-		 
-			return newListPomp;
-		 
+		public static Stage postListGestionDirecteur(Stage session){
+			Stage newSession = new Stage();
+			
+			
+			return newSession;
 		}
 		
 		public void pushInfoServer(){
-			connect();
-			
+			WebResource service = connect();
 			// Create a new list of candidates
-			newListCandidats = postListGestionDirecteur();
+			//Stage newListCandidats = postListGestionDirecteur(newSession);
 			
 			// Add a new product using the POST HTTP method. managed by the Jersey framework
-			service.path("directeur/idPompier").type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
-			.put(new GenericType<Pompiers>(){}, newListCandidats);
-			
+			//service.path("directeur/idPompier").type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).put(new GenericType<Pompiers>(){}, newListCandidats);
 		}
 	 
 
 
 		public static void main(String[] args) {
-		
+			
+			List<String> maSession = getListSessionDirecteur();
+			//List<String> mesCandidats = getListCandidatDirecteur(maSession);
 		}
 }
 
