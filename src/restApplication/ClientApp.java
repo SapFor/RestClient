@@ -34,6 +34,7 @@ public class ClientApp implements ClientAppInterface {
 		private static int idSession;
 		private static List<StageConcret> listSession;
 		private static List<UVConcret> listUV;
+		private static int nbCandidats = 0;
 		
 		private static ClientConfig config;
 		private static Client client;
@@ -75,7 +76,7 @@ public class ClientApp implements ClientAppInterface {
 		public int getIdSession(){ return idSession; }
 		
 		// Test if the stage is closed
-		public static boolean testDate(String nomStage){
+		public boolean testDate(String nomStage){
 			StageConcret test;
 			int i = 0;
 			while( i<listSession.size() && !nomStage.equals(listSession.get(i).getNomStage()) ){ i++;}
@@ -128,7 +129,7 @@ public class ClientApp implements ClientAppInterface {
 	    	while(ite.hasNext()){  // loop to get name/date/place of each stage and put into the created list
 	    		StageConcret newLigne = ite.next();
 				
-				nomUV = newLigne.getUV();
+				nomUV = newLigne.getNomStage();
 				dateStage = newLigne.getDate();
 				date = dateStage.get(Calendar.DAY_OF_MONTH) + "/" + dateStage.get(Calendar.MONTH)+1 + "/" + dateStage.get(Calendar.YEAR);
 				nomLieu = newLigne.getLieu();
@@ -141,8 +142,8 @@ public class ClientApp implements ClientAppInterface {
 		
 		
 		
-	  	// Get list of director candidates for a specific session : to put into the director tab
-		public List<String> getListCandidatDirecteur(String ClickedItemSession){
+	  	// Get list of director candidates for a specific stage : to put into the director tab
+		public List<String> getListCandidatDirecteur(String ClickedItemSession, String listLoading){
 
 			/*
 			// Get the three words of the item "Nom  Date  Lieu" and redo a unique completed string
@@ -157,14 +158,28 @@ public class ClientApp implements ClientAppInterface {
 	    	
 	        // Comparison between the string stage and the correspondent element in the list of stages (of the server)
 	        int i = 0;
-	        while( i<listSession.size() && !ClickedItemSession.equals(listSession.get(i).getNomStage())){ i++; }
+	        while( i<listSession.size() && !ClickedItemSession.equals(listSession.get(i).getNomStage()) ){ i++; }
 	        
 	        // the correct stage is found in the list -> get candidates list
-	        List<String> listIdCandidat = listSession.get(i).getCandidats(); 
-	       
+	        List<String> listId;
+			switch (listLoading){  // choice of the candidates list to load
+			
+				case "candidat": listId = listSession.get(i).getCandidats();
+								 nbCandidats = listId.size();  
+								 break;
+			
+				case "attente": listId = listSession.get(i).getAttente(); break;
+				
+				case "accepte": listId = listSession.get(i).getAccepte(); break;
+				
+				case "refuse": listId = listSession.get(i).getRefuse(); break;
+
+				default: System.out.println("Aucune liste trouvee");
+			}
+			
 		 	List<String> listPompiers = new ArrayList();  // create list of firemans for pushing on the tab
 		 	
-	    	Iterator<String> ite = listIdCandidat.iterator();
+	    	Iterator<String> ite = listId.iterator();
 	    	while(ite.hasNext()){  // loop to get last name/first name of each fireman and put into the created list
 	    		String newLigne = ite.next();
 	    		String path = "pompier/" + newLigne;
@@ -176,6 +191,12 @@ public class ClientApp implements ClientAppInterface {
 	    	}
 	    	return listPompiers;
 	    }
+		
+		
+		// Get the number of candidates for a stage : to put into the director tab 
+		public int getNbCandidats(){
+			return nbCandidats;
+		}
 		
 		
 		
@@ -206,7 +227,7 @@ public class ClientApp implements ClientAppInterface {
 			
 			// Comparison between the string clickedItemUV and the correspondent element in the list of UV (of the server)
 	        int i = 0;
-	        while( i<listUV.size() && !clickedItemUV.equals(listUV.get(i).getNom())){ i++; }
+	        while( i<listUV.size() && !clickedItemUV.equals(listUV.get(i).getNom()) ){ i++; }
 	        
 	        // the correct UV is found in the list -> get description
 	        String description = listUV.get(i).getDescr(); 
@@ -228,7 +249,7 @@ public class ClientApp implements ClientAppInterface {
 			// loop of comparison between the string clickedUV and the correspondent element in the list of UV (of the server)
 	        for(int i=0; i<listSession.size(); i++){
 	        	StageConcret newligne = listSession.get(i);
-	        	if(clickedItemUV == newligne.getUV()){ // if true, get the place/date of the stage and put into the created list 
+	        	if(clickedItemUV == newligne.getNomStage()){ // if true, get the place/date of the stage and put into the created list 
 	        		dateStage = newligne.getDate();
 	        		date = dateStage.get(Calendar.DAY_OF_MONTH) + "/" + (dateStage.get(Calendar.MONTH)+1) + "/" + dateStage.get(Calendar.YEAR);
 	        		nomLieu = newligne.getLieu();
@@ -245,7 +266,7 @@ public class ClientApp implements ClientAppInterface {
 
 			// Comparison between the string ClickedItemSession and the correspondent element in the list of stage (of the server)
 	        int i = 0;
-	        while( i<listSession.size() && !ClickedItemSession.equals(listSession.get(i).getNomStage())){ i++; }
+	        while( i<listSession.size() && !ClickedItemSession.equals(listSession.get(i).getNomStage()) ){ i++; }
 	        
 	        // the correct stage is found in the list -> get detailled infos
 	        String infosDetails = listSession.get(i).getInfos(); 
@@ -255,30 +276,35 @@ public class ClientApp implements ClientAppInterface {
 		
 
 	 
-	 /*
-//!!!!!!!!!!!!!!!!!!!!!!!!! TO DO : pusher des objets sur le serveur !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	 	// Push a updated list of candidates for a specific session to the server : "Enregistrer" button in the director tab
-		public static StageConcret postListGestionDirecteur(StageConcret session){
-			StageConcret newSession = new StageConcret();
+		// Push a updated list of candidates for a specific stage to the server : "Enregistrer" button in the director tab
+		public StageConcret enregBoutonDirecteur(String UVname, List<String> candidat, List<String> accepte, List<String> attente, List<String> refuse){
 			
+			StageConcret updatedSession = new StageConcret();
+			updatedSession.setCandidats(candidat);
+			updatedSession.setAccepte(accepte);
+			updatedSession.setAttente(attente);
+			updatedSession.setRefuse(refuse);
+			updatedSession.setNomStage(UVname);
 			
-			return newSession;
+			// Add a new stage using the POST HTTP method. managed by the Jersey framework
+			service.path("directeur/" + moi.getIdSession()).type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).post(new GenericType<StageConcret>(){}, updatedSession);
 		}
 		
-		public void pushInfoServer(){
-			//WebResource service = connect();
+		
+		
+		// Push a new candidating fireman for a specific stage to the server : "Candidater" button in the formation tab
+		public PompierConcret candidateBoutonFormation(String currentStage){
+				
+			PompierConcret newPomp = new PompierConcret();
+			newPomp.setIdSession(moi.getIdSession());
+			newPomp.setEnCours(currentStage); // on renseigne une liste de stages ou une stage ?
 			
-			// Create a new list of candidates
-			//Stage newListCandidats = postListGestionDirecteur(newSession);
-			
-			// Add a new product using the POST HTTP method. managed by the Jersey framework
-			//service.path("directeur/idPompier").type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).put(new GenericType<Pompiers>(){}, newListCandidats);
+			// Add a new fireman using the POST HTTP method. managed by the Jersey framework
+			service.path("candidat/" + moi.getIdSession()).type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).post(new GenericType<PompierConcret>(){}, newPomp);
 		}
 		
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	 
-	  */
-
+		
+		
 		public static void main(String[] args) {
 			
 			login(1,"12345");
