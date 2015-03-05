@@ -2,6 +2,16 @@ package restApplication;
 
 import java.util.List;
 
+/*
+* Created with Eclipse.
+* Author : Caroline Chabert
+* Interface methods for controllers of IHM
+* Belonging class : "ClientApp"
+*/
+
+import objectsTemplates.PompierConcret;
+import objectsTemplates.StageConcret;
+
 public interface ClientAppInterface {
 	
 	// Get idSession by login and password
@@ -27,7 +37,7 @@ public interface ClientAppInterface {
 	
 	// Get the number of candidates for a stage : to put into the director tab 
 	public int getNbCandidats();
-	
+			
 	// Get list of the formation UVs : to put into the formation tab
 	public List<String> getListUVFormation();	
 			
@@ -39,6 +49,12 @@ public interface ClientAppInterface {
 			
 	// Get detailled infos of the formation stage : to put into the formation tab
 	public String getInfoDetailsFormation(String ClickedItemSession);
+	
+	// Push a updated list of candidates for a specific stage to the server : "Enregistrer" button in the director tab
+	public StageConcret enregBoutonDirecteur(String UVname, List<String> candidat, List<String> accepte, List<String> attente, List<String> refuse);
+			
+	// Push a new candidating fireman for a specific stage to the server : "Candidater" button in the formation tab
+	public PompierConcret candidateBoutonFormation(String currentStage);
 			
 	
 }
