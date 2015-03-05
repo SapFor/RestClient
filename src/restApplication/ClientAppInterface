@@ -23,8 +23,11 @@ public interface ClientAppInterface {
 	public List<String> getListSessionDirecteur();
 			
 	// Get list of director candidates for a specific session : to put into the director tab
-	public List<String> getListCandidatDirecteur(String ClickedItemSession);
-			
+	public List<String> getListCandidatDirecteur(String ClickedItemSession, String listLoading);
+	
+	// Get the number of candidates for a stage : to put into the director tab 
+	public int getNbCandidats();
+	
 	// Get list of the formation UVs : to put into the formation tab
 	public List<String> getListUVFormation();	
 			
