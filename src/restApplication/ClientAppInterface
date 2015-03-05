@@ -4,9 +4,6 @@ import java.util.List;
 
 public interface ClientAppInterface {
 	
-	// First connection with access to the service object and initialize the fireman session
-	public void firstconnect();
-			
 	// Get idSession by login and password
 	public String login(int idPompier,String mdp);
 			
@@ -15,6 +12,9 @@ public interface ClientAppInterface {
 			
 	// Deconnect the session
 	public String deconnexion(int idSession);
+	
+	// Test if the stage is closed
+	public boolean testDate(String nomStage);
 			
 	// Close the candidatures of a stage : associated to the "Candidater" button in the formation tab
 	public String cloturerCandidature(String nomStage,int jour, int mois, int annee);
