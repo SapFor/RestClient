@@ -51,17 +51,19 @@ public class ClientApp implements ClientAppInterface {
 		}
 		
 		// First connection with access to the service object and initialize the fireman session
-		public static void firstconnect(){
-			config = new DefaultClientConfig();
-			client = Client.create(config);
-			service = client.resource(getBaseURI());
-			moi = service.path("1/12345").accept(MediaType.APPLICATION_JSON).get(new GenericType<PompierConcret>(){}); 
-		}
+		//public static void firstconnect(){
+			
+		//	moi = service.path("1/12345").accept(MediaType.APPLICATION_JSON).get(new GenericType<PompierConcret>(){}); 
+		//}
 		
 		// Get idSession by login and password
 		public static String login(int idPompier,String mdp){
+			config = new DefaultClientConfig();
+			client = Client.create(config);
+			service = client.resource(getBaseURI());
 			String defPath = idPompier + "/" + mdp;
-			moi = service.path(defPath).accept(MediaType.APPLICATION_JSON).get(new GenericType<PompierConcret>(){});
+			PompierConcret check = service.path(defPath).accept(MediaType.APPLICATION_JSON).get(new GenericType<PompierConcret>(){});
+			if check.
 			idSession = moi.getIdSession();
 			
 			if (idSession == 999){ return "erreur"; }
