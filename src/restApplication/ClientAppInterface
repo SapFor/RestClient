@@ -1,0 +1,41 @@
+package restApplication;
+
+import java.util.List;
+
+public interface ClientAppInterface {
+	
+	// First connection with access to the service object and initialize the fireman session
+	public void firstconnect();
+			
+	// Get idSession by login and password
+	public String login(int idPompier,String mdp);
+			
+	// Get IdSession
+	public int getIdSession();
+			
+	// Deconnect the session
+	public String deconnexion(int idSession);
+			
+	// Close the candidatures of a stage : associated to the "Candidater" button in the formation tab
+	public String cloturerCandidature(String nomStage,int jour, int mois, int annee);
+			
+	// Get list of the director stages : to put into the director tab
+	public List<String> getListSessionDirecteur();
+			
+	// Get list of director candidates for a specific session : to put into the director tab
+	public List<String> getListCandidatDirecteur(String ClickedItemSession);
+			
+	// Get list of the formation UVs : to put into the formation tab
+	public List<String> getListUVFormation();	
+			
+	// Get description of the formation UVs : to put into the formation tab
+	public String getDescriptionUV(String clickedItemUV);
+			
+	// Get list of the formation stages of the formation UVs : to put into the formation tab
+	public List<String> getListSessionFormation(String clickedItemUV);
+			
+	// Get detailled infos of the formation stage : to put into the formation tab
+	public String getInfoDetailsFormation(String ClickedItemSession);
+			
+	
+}
