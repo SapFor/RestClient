@@ -35,10 +35,6 @@ public class ClientApp implements ClientAppInterface {
 		private static List<StageConcret> listSession;
 		private static List<UVConcret> listUV;
 		
-		private static String uvLocal;
-		private static String dateLocal;
-		private static String LieuLocal;
-		
 		private static ClientConfig config;
 		private static Client client;
 		private static WebResource service;
@@ -50,44 +46,47 @@ public class ClientApp implements ClientAppInterface {
 			return uri;
 		}
 		
+		/*
 		// First connection with access to the service object and initialize the fireman session
-		//public static void firstconnect(){
-			
-		//	moi = service.path("1/12345").accept(MediaType.APPLICATION_JSON).get(new GenericType<PompierConcret>(){}); 
-		//}
+		public static void firstconnect(){
+			config = new DefaultClientConfig();
+			client = Client.create(config);
+			service = client.resource(getBaseURI());
+			moi = service.path("1/12345").accept(MediaType.APPLICATION_JSON).get(new GenericType<PompierConcret>(){}); 
+		}
+		*/
 		
 		// Get idSession by login and password
-		public static String login(int idPompier,String mdp){
+		public String login(int idPompier,String mdp){
 			config = new DefaultClientConfig();
 			client = Client.create(config);
 			service = client.resource(getBaseURI());
 			String defPath = idPompier + "/" + mdp;
 			PompierConcret check = service.path(defPath).accept(MediaType.APPLICATION_JSON).get(new GenericType<PompierConcret>(){});
-			if (check.getIdSession()==999){return "erreur";}
-			else {moi=check;idSession = check.getIdSession();return "ok";}
-			
-					
-		}
-		
-		public static boolean testDate(String nomStage){
-			StageConcret test;
-			int i=0;
-			while(i<listSession.size() && !nomStage.equals(listSession.get(i).getNomStage())){
-				i++;				
+			if (check.getIdSession()==999){ return "erreur"; }
+			else {
+				moi=check;
+				idSession = check.getIdSession(); 
+				return "ok";
 			}
-			
-			test=listSession.get(i);
-			
-			if(test.getFinCandidature().after(Calendar.getInstance().getTime())){return true;}
-			else{return false;} 	
 		}
-		
 		
 		// Get IdSession
-		public static int getIdSession(){ return idSession;}
+		public int getIdSession(){ return idSession; }
+		
+		// Test if the stage is closed
+		public static boolean testDate(String nomStage){
+			StageConcret test;
+			int i = 0;
+			while( i<listSession.size() && !nomStage.equals(listSession.get(i).getNomStage()) ){ i++;}
+			test = listSession.get(i);
+			
+			if( test.getFinCandidature().after(Calendar.getInstance().getTime()) ){ return true; }
+			else{ return false; }
+		}
 		
 		// Deconnect the session
-		public static String deconnexion(int idSession){
+		public String deconnexion(int idSession){
 			String reponse;
 			String nSession = "" + idSession;
 			reponse = service.path(nSession).accept(MediaType.APPLICATION_JSON).get(new GenericType<String>(){});
@@ -98,7 +97,7 @@ public class ClientApp implements ClientAppInterface {
 		}
 		
 		// Close the candidatures of a stage : associated to the "Candidater" button in the formation tab
-		public static String cloturerCandidature(String nomStage,int jour, int mois, int annee){
+		public String cloturerCandidature(String nomStage,int jour, int mois, int annee){
 			String reponse;
 			String date = jour + "/" + mois + "/" + annee;
 			reponse = service.path("directeur/" + nomStage + "/" + date).accept(MediaType.APPLICATION_JSON).get(new GenericType<String>(){});
@@ -112,13 +111,12 @@ public class ClientApp implements ClientAppInterface {
 		
 	
 		// Get list of the director stages : to put into the director tab
-		public static List<String> getListSessionDirecteur(){
+		public List<String> getListSessionDirecteur(){
 			//WebResource service = connect();
 			// Get list of stages from the server
-			EncapsulationStage encapStage = service.path("directeur/" + moi.getIdSession()).accept(MediaType.APPLICATION_JSON).get(new GenericType<EncapsulationStage>(){}); 
-			
+			EncapsulationStage encapStage = service.path("directeur/" + moi.getIdSession()).accept(MediaType.APPLICATION_JSON).get(new GenericType<EncapsulationStage>(){});
 			listSession=encapStage.capsule;
-			 
+			
 			List<String> listSess = new ArrayList(); // create list of stages for pushing on the tab
 			Calendar dateStage;
 			String nomUV;
@@ -146,6 +144,7 @@ public class ClientApp implements ClientAppInterface {
 	  	// Get list of director candidates for a specific session : to put into the director tab
 		public List<String> getListCandidatDirecteur(String ClickedItemSession){
 
+			/*
 			// Get the three words of the item "Nom  Date  Lieu" and redo a unique completed string
 			String nomUVItem = "";
 			String mot = null;
@@ -154,10 +153,11 @@ public class ClientApp implements ClientAppInterface {
 	        	mot = tok.nextToken();
 	        	nomUVItem = nomUVItem + mot;
 	        }
+	        */
 	    	
 	        // Comparison between the string stage and the correspondent element in the list of stages (of the server)
 	        int i = 0;
-	        while( i<listSession.size() && nomUVItem!= listSession.get(i).getUV()){ i++; }
+	        while( i<listSession.size() && !ClickedItemSession.equals(listSession.get(i).getNomStage())){ i++; }
 	        
 	        // the correct stage is found in the list -> get candidates list
 	        List<String> listIdCandidat = listSession.get(i).getCandidats(); 
@@ -181,10 +181,9 @@ public class ClientApp implements ClientAppInterface {
 		
 		
 		// Get list of the formation UVs : to put into the formation tab
-		public static List<String> getListUVFormation(){
+		public List<String> getListUVFormation(){
 			// Get list of stages from the server
-			EncapsulationUV encapUV = service.path("candidat/" + moi.getIdSession()).accept(MediaType.APPLICATION_JSON).get(new GenericType<EncapsulationUV>(){}); 
-			
+			EncapsulationUV encapUV = service.path("candidat/" + moi.getIdSession()).accept(MediaType.APPLICATION_JSON).get(new GenericType<EncapsulationUV>(){});
 			listUV=encapUV.capsule;
 			
 			List<String> listUVDispo = new ArrayList(); // create list of UV for pushing on the tab
@@ -203,7 +202,7 @@ public class ClientApp implements ClientAppInterface {
 		
 		
 		// Get description of the formation UVs : to put into the formation tab
-		public static String getDescriptionUV(String clickedItemUV){
+		public String getDescriptionUV(String clickedItemUV){
 			
 			// Comparison between the string clickedItemUV and the correspondent element in the list of UV (of the server)
 	        int i = 0;
@@ -218,9 +217,7 @@ public class ClientApp implements ClientAppInterface {
 		
 		
 		// Get list of the formation stages of the formation UVs : to put into the formation tab
-		public static List<String> getListSessionFormation(String clickedItemUV){
-			
-			uvLocal = clickedItemUV;
+		public List<String> getListSessionFormation(String clickedItemUV){
 			
 			List<String> listSess = new ArrayList(); // create list of stages for pushing on the tab
 			Calendar dateStage;
@@ -244,10 +241,7 @@ public class ClientApp implements ClientAppInterface {
 		
 		
 		// Get detailled infos of the formation stage : to put into the formation tab
-		public static String getInfoDetailsFormation(String ClickedItemSession){
-			
-			// Get the two words of the item "Lieu  Date" and redo a unique completed string
-			
+		public String getInfoDetailsFormation(String ClickedItemSession){
 
 			// Comparison between the string ClickedItemSession and the correspondent element in the list of stage (of the server)
 	        int i = 0;
@@ -287,7 +281,7 @@ public class ClientApp implements ClientAppInterface {
 
 		public static void main(String[] args) {
 			
-			firstconnect();
+			login(1,"12345");
 			List<String> maSession = getListSessionDirecteur();
 			//List<String> mesCandidats = getListCandidatDirecteur(maSession);
 			
