@@ -63,12 +63,25 @@ public class ClientApp implements ClientAppInterface {
 			service = client.resource(getBaseURI());
 			String defPath = idPompier + "/" + mdp;
 			PompierConcret check = service.path(defPath).accept(MediaType.APPLICATION_JSON).get(new GenericType<PompierConcret>(){});
-			if check.
-			idSession = moi.getIdSession();
+			if (check.getIdSession()==999){return "erreur";}
+			else {moi=check;idSession = check.getIdSession();return "ok";}
 			
-			if (idSession == 999){ return "erreur"; }
-			else { return "ok";}
+					
 		}
+		
+		public static boolean testDate(String nomStage){
+			StageConcret test;
+			int i=0;
+			while(i<listSession.size() && !nomStage.equals(listSession.get(i).getNomStage())){
+				i++;				
+			}
+			
+			test=listSession.get(i);
+			
+			if(test.getFinCandidature().after(Calendar.getInstance().getTime())){return true;}
+			else{return false;} 	
+		}
+		
 		
 		// Get IdSession
 		public static int getIdSession(){ return idSession;}
@@ -102,8 +115,10 @@ public class ClientApp implements ClientAppInterface {
 		public static List<String> getListSessionDirecteur(){
 			//WebResource service = connect();
 			// Get list of stages from the server
-			listSession = service.path("directeur/" + moi.getIdSession()).accept(MediaType.APPLICATION_JSON).get(new GenericType<List<StageConcret>>(){}); 
+			EncapsulationStage encapStage = service.path("directeur/" + moi.getIdSession()).accept(MediaType.APPLICATION_JSON).get(new GenericType<EncapsulationStage>(){}); 
 			
+			listSession=encapStage.capsule;
+			 
 			List<String> listSess = new ArrayList(); // create list of stages for pushing on the tab
 			Calendar dateStage;
 			String nomUV;
@@ -142,7 +157,7 @@ public class ClientApp implements ClientAppInterface {
 	    	
 	        // Comparison between the string stage and the correspondent element in the list of stages (of the server)
 	        int i = 0;
-	        while( i<listSession.size() && nomUVItem!= listSession.get(i).toString()){ i++; }
+	        while( i<listSession.size() && nomUVItem!= listSession.get(i).getUV()){ i++; }
 	        
 	        // the correct stage is found in the list -> get candidates list
 	        List<String> listIdCandidat = listSession.get(i).getCandidats(); 
@@ -168,8 +183,10 @@ public class ClientApp implements ClientAppInterface {
 		// Get list of the formation UVs : to put into the formation tab
 		public static List<String> getListUVFormation(){
 			// Get list of stages from the server
-			listUV = service.path("candidat/" + moi.getIdSession()).accept(MediaType.APPLICATION_JSON).get(new GenericType<List<UVConcret>>(){}); 
-					
+			EncapsulationUV encapUV = service.path("candidat/" + moi.getIdSession()).accept(MediaType.APPLICATION_JSON).get(new GenericType<EncapsulationUV>(){}); 
+			
+			listUV=encapUV.capsule;
+			
 			List<String> listUVDispo = new ArrayList(); // create list of UV for pushing on the tab
 			String nomUV;
 					
@@ -190,7 +207,7 @@ public class ClientApp implements ClientAppInterface {
 			
 			// Comparison between the string clickedItemUV and the correspondent element in the list of UV (of the server)
 	        int i = 0;
-	        while( i<listUV.size() && clickedItemUV!= listUV.get(i).toString()){ i++; }
+	        while( i<listUV.size() && !clickedItemUV.equals(listUV.get(i).getNom())){ i++; }
 	        
 	        // the correct UV is found in the list -> get description
 	        String description = listUV.get(i).getDescr(); 
@@ -230,18 +247,11 @@ public class ClientApp implements ClientAppInterface {
 		public static String getInfoDetailsFormation(String ClickedItemSession){
 			
 			// Get the two words of the item "Lieu  Date" and redo a unique completed string
-			String nomUVItem = uvLocal;
-			String mot = null;
-			StringTokenizer tok = new StringTokenizer(ClickedItemSession);
-			for (int i=1; i<=2; i++) {
-				mot = tok.nextToken();
-				if(mot == "le"){ mot = tok.nextToken(); }
-				nomUVItem = nomUVItem + mot;
-			}
+			
 
 			// Comparison between the string ClickedItemSession and the correspondent element in the list of stage (of the server)
 	        int i = 0;
-	        while( i<listSession.size() && ClickedItemSession!= listSession.get(i).toString()){ i++; }
+	        while( i<listSession.size() && !ClickedItemSession.equals(listSession.get(i).getNomStage())){ i++; }
 	        
 	        // the correct stage is found in the list -> get detailled infos
 	        String infosDetails = listSession.get(i).getInfos(); 
